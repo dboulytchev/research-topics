@@ -55,20 +55,97 @@ language=llang
 
 \begin{document}
 
-\include{abstract_syntax}
-\include{dynamic_bs_semantics}
-\include{vertical_syntax}
-\include{defined_variables}
-\include{control_flow}
-\include{arrays}
-\include{references}
-\include{cps}
-\include{simple_break}
-\include{sm}
-\include{sm_compiler}
-\include{compiler_equiv}
-\include{lattices}
-\include{fixpoint_approximation}
+\section{Релизация генерирующих расширений в type-driven форме}
+
+Пусть программа $P$ принимает аргументы $x$ и $y$; результат её работы над ними
+обозначим $P(x, y)$. Пусть $a$~--- какое-то значение аргумента $x$. Программа
+$S^{x=a}_P$ называется \emph{специализацией} $P$ для $x=a$, если
+
+$$
+\forall b \;\; S^{x=a}_P(b)=P(a, b)
+$$
+
+Программа $G^x_P$ называется \emph{генерирующим расширением} (generating extension) для
+программы $P$, если выполнено следующее соотношение:
+
+$$
+\forall a \;\; G^x_P(a)=S^{x=a}_P
+$$
+
+Иными словами, генерирующее расширение по значению первого аргумента для $P$ порождает
+её специализацию на это значение. 
+
+Генерирующее расширение может быть написано либо руками, либо получено с помощью общих
+механизмов смешанных вычислений.
+
+В рамках данной темы предполагается разработать способ автоматизированного получения
+генерирующих расширений на основе аннотаций типов для Haskell. Идея заключается в том, чтобы,
+имея описание для $P$ (видимо, на некотором DSL комбинаторного типа) получать из этого описания
+генерирующее расширение, просто меняя аннотацию соответствующего аргумента. Например:
+
+\begin{verbatim}
+  p :: Int -> Int -> Int
+  p x y = x + y
+\end{verbatim}
+
+Поменяем аннотацию у \verb|p|:
+
+\begin{verbatim}
+  p :: Int -> Dyn Int -> Text Int
+  p x y = x + y
+\end{verbatim}
+
+Теперь, применив \verb|p| к 3, получим \emph{текст} генерирующего расширения.
+
+Некоторая литература по теме:
+
+\begin{enumerate}
+\item Neil Jones, Carsten Gomard, Peter Sestoft. Partial evaluation and automatic program generation // \url{https://www.itu.dk/~sestoft/pebook/jonesgomardsestoft-a4.pdf}
+\item Jaques Carrette, Oleg Kyseliov, Chung-chien Chan. Finally Tagless, Partially Evaluated. Tagless Staged Interpreters for Sumpler Typed Languages // \url{http://okmij.org/ftp/tagless-final/JFP.pdf}
+\end{enumerate}
+
+\section{Генерация реляционных программ для решения логических задач}
+
+Реляционное программирование~--- это подход, при котором программы описываются не как функции, а как отношения. Это позволяет
+выполнять их ``в разные стороны''~--- например, по результатам получать аргументы. Реляционная спецификация сложения,
+таким образом, одновременно является описанием вычитания, умножения~--- деления и т.д.
+
+С точки зрения классификации подходов реляционное программирование можно отнести к тому же классу, что и логическое. Поэтому
+одно из возможных примененией~--- это построение решателей логических задач по полностью декларативному описанию.
+
+В данной теме предлагается изучить DSL реляционного программирования miniKanren и его реализацию для языка OCaml, научиться
+на нем писать спецификации логических задач, а потом научиться генерировать \emph{экземпляры} этих описаний для
+задач разного размера (например, описать генератор задачи о ферзях для любого количества и ферзей и 
+любого размера доски). Возможно, что для того, чтобы это сделать безопасным способом, текущих примитивов не хватит.
+
+Некоторая литература по теме:
+
+\begin{enumerate}
+\item Язык реляционного программирования miniKanren: \url{http://minikanren.org}; там же
+можно почитать про ``канонические'' реализации решателей;
+\item Реализация оного для OCaml: \url{https://github.com/dboulytchev/OCanren};
+\item Её короткое описание: \url{http://oops.math.spbu.ru/papers/ocanren.pdf}.
+\end{enumerate}
+
+%\section{Комбинаторы для кодогенерации}
+
+%\section{Генерация кода и разрешение ограничений}
+
+\section{First-class unification для Haskell}
+
+Унификация термов $p$ и $q$~--- это такая подстановка $\theta$, что $p\theta=q\theta$. Унификация играет
+чрезвычайно важную роль в логическом программировании. В рамках данной темы предлагается
+попробовать реализовать first-class унификацию для языка Haskell~--- например, научиться по терму
+строить задачу унификации, которая дальше могла бы ``путешествовать'' по структурам данных и 
+применяться к другим термам.
+
+Некоторая литература по теме:
+
+\begin{enumerate}
+\item Franz Baader, Wayne Snyder. Unification Theory (первые две главы): \url{http://www.cs.bu.edu/~snyder/publications/UnifChapter.pdf};
+\item Mark Tullsen. First Class Patterns: \url{http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.37.7006};
+\item Manuel M. T. Chakravarty , Gabriel C. Ditu , Roman Leshchinskiy. Instant Generics: Fast and Easy: \url{http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.150.1033}.
+\end{enumerate}
 
 \end{document}
 
